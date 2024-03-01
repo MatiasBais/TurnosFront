@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, FlatList, TextInput, Modal } from 'react-native';
+import { View, Text, Button, FlatList, TextInput, Modal  } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Card } from 'react-native-paper'; 
 import moment from 'moment';
 import { Picker } from '@react-native-picker/picker';
+import styles from '../css/SeleccionTurnosScreen';
 
 const generarTurnosDisponibles = (fechaSeleccionada, turnosTomados, horaI, horaF) => {
   const duracionTurno = 30;
@@ -65,7 +67,7 @@ const SeleccionTurnosScreen = () => {
   
 
   useEffect(() => {
-    fetch('http://localhost/turnosback/getTurnos.php')
+    fetch('https://faq-utn.heliohost.us/getTurnos.php')
       .then(response => response.json())
       .then(data => {
         if (data && data.length > 0) {
@@ -118,19 +120,19 @@ const SeleccionTurnosScreen = () => {
 
   const handleConfirmarReserva = () => {
     // Crear objeto con los datos a enviar
-    const url = `http://localhost/TurnosBack/createTurno.php?nombre=${nombre}&telefono=${telefono}&fecha=${fechaSeleccionada}&hora=${horaSeleccionada}`;
+    const url = `https://faq-utn.heliohost.us/createTurno.php?nombre=${nombre}&telefono=${telefono}&fecha=${fechaSeleccionada}&hora=${horaSeleccionada}`;
   
     // Hacer la solicitud a la API
     fetch(url)
       .then(response => response.json()) // Convertir la respuesta a JSON
       .then(data => {
         // Manejar la respuesta de la API
-        console.log('Respuesta de la API:', data);
         // Cerrar el modal después de enviar la solicitud
         setModalVisible(false);
         // Agregar el turno creado a la lista de turnos tomados si es necesario
         data.hora = data.hora.slice(0, 5); // Obtener solo los primeros 5 caracteres de la hora (HH:MM)
         // Establecer los turnos modificados en el estado
+        guardarTurno(data);
         turnosTomados.push(data)
         const nuevosTurnos = generarTurnosDisponibles(fechaSeleccionada, turnosTomados, horaI, horaF);
     setTurnosDisponibles(nuevosTurnos);
@@ -141,12 +143,31 @@ const SeleccionTurnosScreen = () => {
       });
   };
   
-  
+  const guardarTurno = async (turno) => {
+    try {
+      // Obtener los turnos guardados actualmente
+      const turnosGuardados = await AsyncStorage.getItem('misTurnos');
+      let nuevosTurnos = [];
+      if (turnosGuardados) {
+        nuevosTurnos = JSON.parse(turnosGuardados);
+      }
+      // Agregar el nuevo turno a la lista
+      nuevosTurnos.push(turno);
+      // Guardar los turnos actualizados en AsyncStorage
+      await AsyncStorage.setItem('misTurnos', JSON.stringify(nuevosTurnos));
+    } catch (error) {
+      console.error('Error al guardar el turno:', error);
+    }
+  };
 
   // Generar opciones del picker para los próximos 'diasAFuturo' días
   const diasOptions = Array.from({ length: diasAFuturo + 1 }, (_, i) => {
-    const fecha = moment().add(i, 'days').format('YYYY-MM-DD');
-    return <Picker.Item key={fecha} label={fecha} value={i} />;
+    const fecha = moment().add(i, 'days');
+    // Verificar si la hora actual es mayor que horaI
+    if (!(moment().hour() > horaI && moment().isSame(fecha, 'day'))) {
+      return <Picker.Item key={fecha.format('YYYY-MM-DD')} label={fecha.format('YYYY-MM-DD')} value={i} />;
+    }
+    return null; // Devolver null para omitir el día actual
   });
 
   const renderTurno = ({ item }) => {
@@ -217,73 +238,6 @@ const SeleccionTurnosScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#ffffff',
-  },
-  titulo: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  listaTurnos: {
-    flexGrow: 1,
-    marginTop: 20,
-  },
-  turnoCard: {
-    backgroundColor: '#f0f0f0',
-    marginBottom: 10,
-    borderRadius: 10,
-    flexBasis: '30%', 
-    marginHorizontal: '1.5%', 
-  },
-  turnoHora: {
-    fontSize: 12,
-    textAlign: 'center', 
-  },
-  selectedTurno: {
-    backgroundColor: '#ffbfaf', // Puedes cambiar el color a tu preferencia
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  dateTime: {
-    fontSize: 16,
-    marginBottom: 20,
-  },
-  label: {
-    marginBottom: 5,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Aquí se define la opacidad (0.5 para el 50% de opacidad)
-  },
-  modalContent: {
-    backgroundColor: '#ffffff',
-    padding: 20,
-    borderRadius: 10,
-    elevation: 5,
-    width: '90%', // Modifica este valor para cambiar el ancho del modal
-  },
-  input: {
-    marginBottom: 10,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    width: '100%', // Aquí se define el ancho del input
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    marginTop: 20,
-  },
-});
+
 
 export default SeleccionTurnosScreen;

@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import SeleccionTurnosScreen from './src/screens/SeleccionTurnosScreen';
 import { Title } from 'react-native-paper';
+import styles from './src/css/App';
+import MisTurnosScreen from './src/screens/MisTurnosScreen';
+
 
 export default function App() {
   const [selectedTab, setSelectedTab] = useState('SeleccionarTurno');
@@ -13,7 +16,7 @@ export default function App() {
       </View>
       <View style={styles.content}>
         {selectedTab === 'SeleccionarTurno' && <SeleccionTurnosScreen />}
-        {selectedTab === 'SegundaPestaña' && <View>{/* Contenido de la segunda pestaña */}</View>}
+        {selectedTab === 'SegundaPestaña' && <MisTurnosScreen />}
       </View>
       <View style={styles.tabs}>
         <TouchableOpacity
@@ -33,36 +36,4 @@ export default function App() {
   );
 }
 
-const styles = StyleSheet.create({
-  header: {
-    padding: 20,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  content: {
-    flex: 1,
-  },
-  tabs: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#ccc',
-    backgroundColor: '#ffffff',
-  },
-  tabItem: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-  selectedTabItem: {
-    borderBottomWidth: 2,
-    borderBottomColor: 'blue', // Color del borde inferior para la pestaña seleccionada
-  },
-});
+

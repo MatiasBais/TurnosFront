@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Turnos",
-    "slug": "Turnos",
+    "slug": "turnos",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,10 +21,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.matiasbais.turnos"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f9c7d6a2-8ebe-4274-9d3b-eaf9341b02d6"
+      }
+    },
+    "owner": "matiasbais"
   }
 }
