@@ -5,7 +5,7 @@ import { Title } from 'react-native-paper';
 import styles from './src/css/App';
 import MisTurnosScreen from './src/screens/MisTurnosScreen';
 
-
+console.log("hola");
 export default function App() {
   const [selectedTab, setSelectedTab] = useState('SeleccionarTurno');
 
