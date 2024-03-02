@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, FlatList, TextInput, Modal, ActivityIndicator   } from 'react-native';
+import { View, Text, Button, FlatList, TextInput, Modal, ActivityIndicator, TouchableOpacity   } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Card } from 'react-native-paper'; 
 import moment from 'moment';
@@ -16,7 +16,7 @@ const generarTurnosDisponibles = (fechaSeleccionada, turnosTomados, horaI1, hora
     let minutoInicio = fechaActual.minute();
 
     // Si faltan menos de 59 minutos para la próxima hora en punto, comenzar desde la próxima hora en punto
-    if (minutoInicio > 0 && minutoInicio < 59) {
+    if (minutoInicio > 30 && minutoInicio < 59) {
       horaInicio++;
       minutoInicio = 0;
     }
@@ -26,14 +26,13 @@ const generarTurnosDisponibles = (fechaSeleccionada, turnosTomados, horaI1, hora
 
     // Generar turnos entre horaI1 y horaF1
     for (let i = horaInicio; i < horaF1; i++) {
-      for (let j = minutoInicio; j < 60; j += duracionTurno) {
+      for (let j = 0; j < 60; j += duracionTurno) {
         const hora = `${i.toString().padStart(2, '0')}:${j.toString().padStart(2, '0')}`;
         if (!turnosTomados.find((turno) => turno.hora === hora && turno.fecha === fechaString)) {
           nuevosTurnos.push({ hora });
         }
       }
-      // Reiniciar los minutos después de la primera hora completa
-      minutoInicio = 0;
+
     }
 
     if(horaInicio>=horaI2){
@@ -283,7 +282,7 @@ const diasOptions = Array.from({ length: diasAFuturo + 1 }, (_, i) => {
         contentContainerStyle={styles.listaTurnos}
         numColumns={3} 
       />
-      <Button title="Reservar" onPress={handleReservar} disabled={!horaSeleccionada} />
+      <Button title="Reservar" onPress={handleReservar} disabled={!horaSeleccionada} color="#0062cc"/>
 
       <Modal
   visible={modalVisible}
@@ -311,8 +310,12 @@ const diasOptions = Array.from({ length: diasAFuturo + 1 }, (_, i) => {
         style={styles.input}
       />
       <View style={styles.buttonContainer}>
-        <Button title="Confirmar reserva" onPress={handleConfirmarReserva} />
-        <Button title="Cancelar" onPress={() => setModalVisible(false)} />
+      <TouchableOpacity onPress={() => handleConfirmarReserva()} style={styles.botonReservar}>
+          <Text >Reservar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.botonCancelar}>
+          <Text >Cancelar</Text>
+        </TouchableOpacity>
       </View>
     </View>
   </View>

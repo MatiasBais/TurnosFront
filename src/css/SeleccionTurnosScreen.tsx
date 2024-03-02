@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     textAlign: 'center', 
   },
   selectedTurno: {
-    backgroundColor: '#ffbfaf', // Puedes cambiar el color a tu preferencia
+    backgroundColor: '#0062cc', // Puedes cambiar el color a tu preferencia
   },
   modalTitle: {
     fontSize: 18,
@@ -72,6 +72,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  botonReservar:{
+    backgroundColor: '#0062cc', // Color de fondo del botón
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderRadius: 5,
+  },
+  botonCancelar:{
+    backgroundColor: '#e60023', // Color de fondo del botón
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderRadius: 5,
+  }
 });
 
 export default styles;

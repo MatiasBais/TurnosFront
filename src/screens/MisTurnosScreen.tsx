@@ -1,13 +1,14 @@
 import styles from '../css/MisTurnosScreen';
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { Card } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const MisTurnosScreen = () => {
   const [misTurnos, setMisTurnos] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const cargarTurnosGuardados = async () => {
@@ -41,7 +42,7 @@ const MisTurnosScreen = () => {
         }
 
         // Guardar los turnos actualizados en AsyncStorage
-       
+       setLoading(false);
 
 
         }
@@ -100,31 +101,40 @@ const MisTurnosScreen = () => {
     }
   };
 
-    
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  } 
   // Función para renderizar cada tarjeta de turno en la lista
   const renderTurno = ({ item }) => (
     <Card style={styles.card}>
-  <Card.Content style={styles.content}>
-    <View style={styles.textContainer}>
-      <Text style={styles.text}>Fecha: {item.fecha}</Text>
-      <Text style={styles.text}>Hora: {item.hora}</Text>
-    </View>
-    <TouchableOpacity onPress={() => handleEliminarTurno(item)} style={styles.button}>
-      <Text style={styles.buttonText}>Cancelar</Text>
-    </TouchableOpacity>
-  </Card.Content>
-</Card>
+      <Card.Content style={styles.content}>
+        <View style={styles.textContainer}>
+          <Text style={styles.text}>Fecha: {item.fecha}</Text>
+          <Text style={styles.text}>Hora: {item.hora}</Text>
+        </View>
+        <TouchableOpacity onPress={() => handleEliminarTurno(item)} style={styles.button}>
+          <Text style={styles.buttonText}>Cancelar</Text>
+        </TouchableOpacity>
+      </Card.Content>
+    </Card>
   );
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Mis Turnos</Text>
+      {misTurnos.length > 0 ? (
       <FlatList
         data={misTurnos}
         renderItem={renderTurno}
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={styles.flatList}
-      />
+      />):(
+        <Text>No hay turnos disponibles</Text>
+      )}
     </View>
   );
 };

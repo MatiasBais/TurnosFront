@@ -1,13 +1,15 @@
 import styles from '../css/TurnosScreen';
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Alert,ActivityIndicator } from 'react-native';
 import { Card } from 'react-native-paper';
 
 
 const TurnosScreen = () => {
     const [misTurnos, setMisTurnos] = useState([]);
     const [expandedFecha, setExpandedFecha] = useState(null);
+    const [loading, setLoading] = useState(true);
+
   
     useEffect(() => {
       const cargarTurnosGuardados = async () => {
@@ -26,13 +28,60 @@ const TurnosScreen = () => {
       };
   
       // Llamar a la función para cargar los turnos guardados al cargar la pantalla
+      
       cargarTurnosGuardados();
+      setLoading(false)
     }, []);
   
     // Función para expandir/cerrar una fecha
     const toggleExpand = (fecha) => {
       setExpandedFecha(expandedFecha === fecha ? null : fecha);
     };
+
+    const handleEliminarTurno = (turno) => {
+        Alert.alert(
+          'Confirmar cancelar',
+          '¿Estás seguro de que deseas cancelar este turno?',
+          [
+            {
+              text: 'No',
+              style: 'cancel',
+            },
+            {
+              text: 'Sí, cancelar turno',
+              onPress: () => eliminarTurno(turno),
+            },
+          ],
+          { cancelable: false }
+        );
+      };
+    
+      const eliminarTurno = async (turno) => {
+        // Implementa lógica para eliminar el turno
+        try {
+          // Eliminar el turno del almacenamiento interno
+          const nuevosTurnos = misTurnos.filter(item => item.id !== turno.id);
+          setMisTurnos(nuevosTurnos);
+          
+          // URL del endpoint para eliminar el turno de la API
+          const url = `https://faq-utn.heliohost.us/deleteTurno.php?id=${turno.id}`;
+      
+          // Configurar opciones de la solicitud
+          const opciones = {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          };
+      
+          // Hacer la solicitud a la API
+          const response = await fetch(url, opciones);
+          const data = await response.json();
+          console.log('Respuesta de la API:', data);
+        } catch (error) {
+          console.error('Error al eliminar el turno:', error);
+        }
+      };
   
     // Función para renderizar los turnos de una fecha
     const renderTurnosPorFecha = (fecha) => {
@@ -40,10 +89,18 @@ const TurnosScreen = () => {
       const turnosOrdenados = turnosFecha.sort((a, b) => a.hora.localeCompare(b.hora));
   
       return turnosOrdenados.map(turno => (
-        <View key={turno.id}>
-          <Text>{turno.hora.slice(0, 5)} - {turno.nombre} - {turno.telefono}</Text>
-          {/* Aquí puedes personalizar cómo se muestra cada turno */}
-        </View>
+        <Card style={styles.card}>
+            <Card.Content style={styles.turnoContent}>
+                <View style={styles.textContainer}>
+                    <Text style={styles.turnoText}> {turno.hora}</Text>
+                    <Text style={styles.turnoText}> {turno.nombre}</Text>
+                    <Text style={styles.turnoText}> {turno.telefono}</Text>
+                </View>
+                <TouchableOpacity onPress={() => handleEliminarTurno(turno)} style={styles.button}>
+                    <Text style={styles.buttonText}>Cancelar</Text>
+                </TouchableOpacity>
+            </Card.Content>
+        </Card>
       ));
     };
   
@@ -62,10 +119,19 @@ const TurnosScreen = () => {
         </Card>
       </TouchableOpacity>
     );
+
+    if (loading) {
+        return (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        );
+      }
   
     return (
         <View style={styles.container}>
           <Text style={styles.title}>Mis Turnos</Text>
+          
           {misTurnos.length > 0 ? (
             <FlatList
               data={misTurnos.reduce((acc, turno) => {

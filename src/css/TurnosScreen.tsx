@@ -21,6 +21,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 15,
+   
   },
   fecha: {
     fontSize: 16,
@@ -29,16 +30,47 @@ const styles = StyleSheet.create({
   },
   turnosContainer: {
     marginTop: 10,
+    flex:1
   },
   turno: {
     fontSize: 14,
     marginBottom: 5,
   },
-  
-
-flatList: {
+  flatList: {
     flexGrow: 1,
     width: '100%',
+  },
+  turnoCard: {
+    marginBottom: 10,
+    borderRadius: 10,
+  },
+  turnoContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 15,
+  },
+  button: {
+    backgroundColor: '#e60023',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  textContainer: {
+    flex: 1, // Para que ocupe el espacio disponible y el texto se alinee a la izquierda
+  },
+  turnoText: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

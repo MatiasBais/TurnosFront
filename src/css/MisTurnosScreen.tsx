@@ -27,14 +27,14 @@ const styles = StyleSheet.create({
         padding: 15,
       },
       textContainer: {
-        flex: 1, // Para que ocupe el espacio disponible y el texto se alinee a la izquierda
+        flex: 1
       },
       text: {
         fontSize: 16,
         marginBottom: 5,
       },
       button: {
-        backgroundColor: 'red', // Color de fondo del botón
+        backgroundColor: '#e60023', // Color de fondo del botón
         paddingVertical: 10,
         paddingHorizontal: 15,
         borderRadius: 5,
@@ -42,6 +42,11 @@ const styles = StyleSheet.create({
       buttonText: {
         color: '#ffffff', // Color del texto del botón
         fontWeight: 'bold',
+      },
+      loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
       },
   });
   
