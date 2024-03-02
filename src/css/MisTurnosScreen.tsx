@@ -10,6 +10,7 @@ const styles = StyleSheet.create({
       fontSize: 20,
       fontWeight: 'bold',
       marginBottom: 20,
+      marginTop:20,
     },
     flatList: {
       flexGrow: 1,

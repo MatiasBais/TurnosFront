@@ -67,6 +67,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     marginTop: 20,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 export default styles;

@@ -1,61 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, FlatList, TextInput, Modal  } from 'react-native';
+import { View, Text, Button, FlatList, TextInput, Modal, ActivityIndicator   } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Card } from 'react-native-paper'; 
 import moment from 'moment';
 import { Picker } from '@react-native-picker/picker';
 import styles from '../css/SeleccionTurnosScreen';
-
-let diasAFuturo = 14;
-let duracionTurno = 30;
-let horaI1 = 8;
-let horaF1 = 12;
-let horaI2 = 16;
-let horaF2 = 20;
-fetch('https://faq-utn.heliohost.us/getParametros.php', {
-  method: 'GET',
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
-.then(response => {
-  if (!response.ok) {
-    throw new Error('Error al obtener los parámetros');
-  }
-  return response.json();
-})
-.then(data => {
-  // Establecer los valores recibidos en las variables correspondientes
-    diasAFuturo = parseInt(data.diasAFuturo);
-    duracionTurno= parseInt(data.duracionTurno);
-    horaI1 = parseInt(data.horaI1);
-    horaF1 = parseInt(data.horaF1);
-    horaI2 = parseInt(data.horaI2);
-    horaF2 = parseInt(data.horaF2);
-  
-  console.log('Parámetros obtenidos:', data);
-
-  // Aquí puedes hacer lo que necesites con estos valores
-})
-.catch(error => {
-  console.error('Error:', error);
-});
-
-let diasExcluidos = [];
-fetch('https://faq-utn.heliohost.us/getDiasNoLaborables.php')
-  .then(response => response.json())
-  .then(data => {
-    // Iterar sobre los datos obtenidos y agregar las fechas al array diasExcluidos
-    data.forEach(fecha => {
-      diasExcluidos.push(fecha.fecha);
-    });
-    console.log('Fechas excluidas obtenidas:', diasExcluidos);
-  })
-  .catch(error => {
-    console.error('Error al obtener las fechas excluidas:', error);
-  });
-
-
 
 const generarTurnosDisponibles = (fechaSeleccionada, turnosTomados, horaI1, horaF1, horaI2, horaF2, duracionTurno) => {
   const nuevosTurnos = [];
@@ -74,9 +23,6 @@ const generarTurnosDisponibles = (fechaSeleccionada, turnosTomados, horaI1, hora
     if (horaInicio < horaI1) {
       horaInicio = horaI1;
     }
-    if (horaInicio < horaI2) {
-      horaInicio = horaI2;
-    }
 
     // Generar turnos entre horaI1 y horaF1
     for (let i = horaInicio; i < horaF1; i++) {
@@ -90,8 +36,11 @@ const generarTurnosDisponibles = (fechaSeleccionada, turnosTomados, horaI1, hora
       minutoInicio = 0;
     }
 
+    if(horaInicio>=horaI2){
+      horaI2 = horaInicio
+    }
     // Generar turnos entre horaI2 y horaF2
-    for (let i = horaI2; i < horaF2 || horaInicio == horaI2; i++) {
+    for (let i = horaI2; i < horaF2; i++) {
       for (let j = 0; j < 60; j += duracionTurno) {
         const hora = `${i.toString().padStart(2, '0')}:${j.toString().padStart(2, '0')}`;
         if (!turnosTomados.find((turno) => turno.hora === hora && turno.fecha === fechaString)) {
@@ -124,15 +73,64 @@ const generarTurnosDisponibles = (fechaSeleccionada, turnosTomados, horaI1, hora
 };
 
 const SeleccionTurnosScreen = () => {
+  const [loading, setLoading] = useState(true);
   const [fechaSeleccionada, setFechaSeleccionada] = useState(moment().format('YYYY-MM-DD'));
   const [horaSeleccionada, setHoraSeleccionada] = useState(null);
-  const [dias, setDias] = useState(); // Mostrar los próximos 14 días
+  const [dias, setDias] = useState(1); // Mostrar los próximos 14 días
   const [turnosDisponibles, setTurnosDisponibles] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
 
   const [turnosTomados, setTurnosTomados] = useState([]);
+  
+  const [diasAFuturo, setDiasAFuturo] = useState(null);
+  const [duracionTurno, setDuracionTurno] = useState(null);
+  const [horaI1, setHoraI1] = useState(null);
+  const [horaF1, setHoraF1] = useState(null);
+  const [horaI2, setHoraI2] = useState(null);
+  const [horaF2, setHoraF2] = useState(null);
+  const [diasExcluidos, setDiasExcluidos] = useState([]);
+
+
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const parametrosResponse = await fetch('https://faq-utn.heliohost.us/getParametros.php');
+        const parametrosData = await parametrosResponse.json();
+        const diasAFuturo = parseInt(parametrosData.diasAFuturo);
+        const duracionTurno = parseInt(parametrosData.duracionTurno);
+        const horaI1 = parseInt(parametrosData.horaI1);
+        const horaF1 = parseInt(parametrosData.horaF1);
+        const horaI2 = parseInt(parametrosData.horaI2);
+        const horaF2 = parseInt(parametrosData.horaF2);
+
+        const diasNoLaborablesResponse = await fetch('https://faq-utn.heliohost.us/getDiasNoLaborables.php');
+        const diasNoLaborablesData = await diasNoLaborablesResponse.json();
+        const diasExcluidos = diasNoLaborablesData.map(fecha => fecha.fecha);
+
+        setDiasAFuturo(diasAFuturo);
+        setDuracionTurno(duracionTurno);
+        setHoraI1(horaI1);
+        setHoraF1(horaF1);
+        setHoraI2(horaI2);
+        setHoraF2(horaF2);
+        setDiasExcluidos(diasExcluidos);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const nuevosTurnos = generarTurnosDisponibles(fechaSeleccionada, turnosTomados, horaI1, horaF1, horaI2, horaF2, duracionTurno);
+    setTurnosDisponibles(nuevosTurnos);
+  }, [fechaSeleccionada, turnosTomados, horaI1, horaF1, horaI2, horaF2, duracionTurno]);
 
   
 
@@ -147,9 +145,12 @@ const SeleccionTurnosScreen = () => {
           }));
           // Establecer los turnos modificados en el estado
           setTurnosTomados(turnosModificados);
+          setFechaSeleccionada(moment().add(1, 'days').format('YYYY-MM-DD'));
+
         } else {
           // Si no hay datos, establecer un estado inicial vacío
           setTurnosTomados([]);
+          setFechaSeleccionada(moment().add(1, 'days').format('YYYY-MM-DD'));
           console.log('No se encontraron turnos en la base de datos.');
         }
       })
@@ -176,6 +177,8 @@ const SeleccionTurnosScreen = () => {
     setHoraSeleccionada(null);
     setFechaSeleccionada(moment().add(dias, 'days').format('YYYY-MM-DD'));
   };
+
+
 
   const handleSeleccionTurno = (hora) => {
     setHoraSeleccionada(hora);
@@ -241,6 +244,8 @@ const diasOptions = Array.from({ length: diasAFuturo + 1 }, (_, i) => {
   return null; // Devolver null para omitir la fecha actual y las fechas excluidas
 });
 
+
+
   const renderTurno = ({ item }) => {
     const isSelected = horaSeleccionada === item.hora;
     return (
@@ -255,6 +260,13 @@ const diasOptions = Array.from({ length: diasAFuturo + 1 }, (_, i) => {
     );
   };
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>Selecciona un turno disponible:</Text>
@@ -307,6 +319,7 @@ const diasOptions = Array.from({ length: diasAFuturo + 1 }, (_, i) => {
 </Modal>
     </View>
   );
+
 };
 
 
