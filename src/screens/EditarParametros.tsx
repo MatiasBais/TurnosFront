@@ -147,7 +147,7 @@ const guardarParametros = async () =>{
   <TextInput
     style={styles.input}
     value={horaF2.toString()}
-    onChangeText={text => text!=''?setHoraF2(parseInt(text) || null):null}
+    onChangeText={text => text!=''?setHoraF2(parseInt(text) || null):''}
     keyboardType="numeric"
   />
 </View>
