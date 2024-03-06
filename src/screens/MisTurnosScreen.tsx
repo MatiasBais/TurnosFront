@@ -133,7 +133,7 @@ const MisTurnosScreen = () => {
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={styles.flatList}
       />):(
-        <Text>No hay turnos disponibles</Text>
+        <Text>No hay turnos reservados</Text>
       )}
     </View>
   );

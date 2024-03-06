@@ -130,7 +130,7 @@ const TurnosScreen = () => {
   
     return (
         <View style={styles.container}>
-          <Text style={styles.title}>Mis Turnos</Text>
+          <Text style={styles.title}>Turnos</Text>
           
           {misTurnos.length > 0 ? (
             <FlatList
@@ -145,7 +145,7 @@ const TurnosScreen = () => {
               contentContainerStyle={styles.flatList}
             />
           ) : (
-            <Text>No hay turnos disponibles</Text>
+            <Text>No hay turnos reservados</Text>
           )}
         </View>
       );

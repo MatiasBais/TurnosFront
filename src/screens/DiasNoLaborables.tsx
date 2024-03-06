@@ -48,7 +48,19 @@ const DiasNoLaborablesScreen = () => {
   const handleAgregar = (fecha) => {
     const fetchData = async () => {
         try {
-          const response = await fetch('https://faq-utn.heliohost.us/addFecha.php?fecha='+new Date(fecha).toISOString().split('T')[0]);
+          const fechaEspecifica = new Date(fecha); // El mes se indexa desde 0, por lo que 4 representa mayo
+
+          // Obtener el desplazamiento de zona horaria en minutos
+          const offsetMinutes = fechaEspecifica.getTimezoneOffset();
+
+          // Restar el desplazamiento de zona horaria para obtener la fecha en UTC
+          fechaEspecifica.setMinutes(fechaEspecifica.getMinutes() - offsetMinutes);
+
+          // Convertir la fecha a una cadena ISO sin desplazamiento de zona horaria
+          const fechaISO = fechaEspecifica.toISOString();
+
+          const response = await fetch('https://faq-utn.heliohost.us/addFecha.php?fecha='+fechaISO.split('T')[0]);
+          console.log('https://faq-utn.heliohost.us/addFecha.php?fecha='+fechaISO.split('T')[0])
           const data = await response.json();
           setActualizar(fecha)
         } catch (error) {

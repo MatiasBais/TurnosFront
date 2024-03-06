@@ -73,7 +73,23 @@ const generarTurnosDisponibles = (fechaSeleccionada, turnosTomados, horaI1, hora
 
 const SeleccionTurnosScreen = () => {
   const [loading, setLoading] = useState(true);
-  const [fechaSeleccionada, setFechaSeleccionada] = useState(moment().format('YYYY-MM-DD'));
+  const fechaEspecifica = new Date(); // El mes se indexa desde 0, por lo que 4 representa mayo
+
+  // Obtener el desplazamiento de zona horaria en minutos
+  const offsetMinutes = fechaEspecifica.getTimezoneOffset();
+
+  // Restar el desplazamiento de zona horaria para obtener la fecha en UTC
+  fechaEspecifica.setMinutes(fechaEspecifica.getMinutes() - offsetMinutes);
+  
+  const año = fechaEspecifica.getFullYear();
+    const mes = ('0' + (fechaEspecifica.getMonth() + 1)).slice(-2); // Agrega un cero inicial si el mes es de un solo dígito
+    const dia = ('0' + fechaEspecifica.getDate()).slice(-2); // Agrega un cero inicial si el día es de un solo dígito
+
+    // Formatear la fecha en el formato YYYY-MM-DD
+    const fecha2 = `${año}-${mes}-${dia}`;
+  // Convertir la fecha a una cadena ISO sin desplazamiento de zona horaria
+  const fechaISO = fechaEspecifica.toISOString();
+  const [fechaSeleccionada, setFechaSeleccionada] = useState(fecha2);
   const [horaSeleccionada, setHoraSeleccionada] = useState(null);
   const [dias, setDias] = useState(1); // Mostrar los próximos 14 días
   const [turnosDisponibles, setTurnosDisponibles] = useState([]);
@@ -144,12 +160,34 @@ const SeleccionTurnosScreen = () => {
           }));
           // Establecer los turnos modificados en el estado
           setTurnosTomados(turnosModificados);
-          setFechaSeleccionada(moment().add(1, 'days').format('YYYY-MM-DD'));
+          const fecha = new Date();
+
+          // Agregar x días
+          fecha.setDate(fecha.getDate() + 1);
+          
+          const año = fecha.getFullYear();
+          const mes = ('0' + (fecha.getMonth() + 1)).slice(-2); // Agrega un cero inicial si el mes es de un solo dígito
+          const dia = ('0' + fecha.getDate()).slice(-2); // Agrega un cero inicial si el día es de un solo dígito
+
+          // Formatear la fecha en el formato YYYY-MM-DD
+          const fecha2 = `${año}-${mes}-${dia}`;
+          setFechaSeleccionada(fecha2);
 
         } else {
           // Si no hay datos, establecer un estado inicial vacío
           setTurnosTomados([]);
-          setFechaSeleccionada(moment().add(1, 'days').format('YYYY-MM-DD'));
+          const fecha = new Date();
+
+          // Agregar x días
+          fecha.setDate(fecha.getDate() + 1);
+
+          const año = fecha.getFullYear();
+          const mes = ('0' + (fecha.getMonth() + 1)).slice(-2); // Agrega un cero inicial si el mes es de un solo dígito
+          const dia = ('0' + fecha.getDate()).slice(-2); // Agrega un cero inicial si el día es de un solo dígito
+
+          // Formatear la fecha en el formato YYYY-MM-DD
+          const fecha2 = `${año}-${mes}-${dia}`;
+          setFechaSeleccionada(fecha2);
           console.log('No se encontraron turnos en la base de datos.');
         }
       })
@@ -174,7 +212,18 @@ const SeleccionTurnosScreen = () => {
   const handleDiasChange = (dias) => {
     setDias(dias);
     setHoraSeleccionada(null);
-    setFechaSeleccionada(moment().add(dias, 'days').format('YYYY-MM-DD'));
+    const fecha = new Date();
+
+    // Agregar x días
+    fecha.setDate(fecha.getDate() + dias);
+    const año = fecha.getFullYear();
+    const mes = ('0' + (fecha.getMonth() + 1)).slice(-2); // Agrega un cero inicial si el mes es de un solo dígito
+    const dia = ('0' + fecha.getDate()).slice(-2); // Agrega un cero inicial si el día es de un solo dígito
+
+    // Formatear la fecha en el formato YYYY-MM-DD
+    const fecha2 = `${año}-${mes}-${dia}`;
+
+    setFechaSeleccionada(fecha2);
   };
 
 
