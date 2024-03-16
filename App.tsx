@@ -15,7 +15,7 @@ export default function App() {
     <View style={{flex:1}}>
     <View style={styles.header}>
       <View style={styles.titleContainer}>
-        <Title style={styles.title}>Institución</Title>
+        <Title style={styles.title}>Reserva de Turnos</Title>
       </View>
       <View style={styles.logoContainer}>
         <Image

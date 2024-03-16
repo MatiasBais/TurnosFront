@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
+    padding:20
   },
   logoContainer: {
     marginLeft: 'auto', // Para colocar el logo a la derecha
@@ -35,6 +36,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#ccc',
     backgroundColor: '#ffffff',
+    marginBottom:10
   },
   tabItem: {
     flex: 1,
